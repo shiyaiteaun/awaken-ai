@@ -1,0 +1,640 @@
+/* Global Resets & Body Styles */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f6f8;
+  color: #333;
+  line-height: 1.6;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Header Styles */
+.App-header {
+  background-color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-logo {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.header-brand-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-right: auto;
+}
+
+.header-title {
+  font-size: 1.2rem;
+  color: #555;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 500;
+}
+
+.header-icons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.icon-button:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+/* Main Content Area */
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  padding: 0 1rem 1rem 1rem;
+  background-color: #e9ecef;
+}
+
+/* Results View Container (Chat Area) */
+.results-view-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 900px; /* သင်လိုချင်တဲ့ အကျယ်ကို ဒီမှာချိန်ညှိနိုင်ပါတယ် (ဥပမာ 800px, 1000px) */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px; /* ဘေးဘက် padding အနည်းငယ်ထည့်ထားခြင်းဖြင့် စာသားများ ဘောင်နှင့်ကပ်မနေစေရန် */
+  padding-right: 15px;
+}
+
+.results-view-container.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+}
+
+.ai-greeting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.greeting-logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.greeting-text {
+  font-size: 1.5rem;
+  color: #6c757d;
+}
+
+/* Chat Message Styles */
+.chat-message {
+  display: flex;
+  margin-bottom: 10px;
+  max-width: 75%;
+}
+
+.user-message {
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.ai-message {
+  justify-content: flex-start;
+  margin-right: auto;
+}
+
+.message-bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 18px;
+  word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.user-message .message-bubble {
+  background-color: #007bff;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.ai-message .message-bubble {
+  background-color: #ffffff;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-message.error-message-chat .message-bubble {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Loading Indicator Style */
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  color: #555;
+}
+
+.loading-indicator p {
+  background-color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  font-style: italic;
+}
+
+/* Search Area Container */
+.search-area-container {
+  padding: 1rem;
+  background-color: #ffffff; /* White background for the search area */
+  border-top: 1px solid #dee2e6;
+  flex-shrink: 0;
+}
+
+/* Search Box Form */
+.search-box {
+  display: flex;
+  flex-direction: column; /* Stack input and controls */
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #f8f9fa; /* Light grey background for the box itself */
+  border: 1px solid #e0e0e0; /* Subtle border */
+  border-radius: 12px; /* Rounded corners for the search box */
+  padding: 0.75rem 1rem; /* Padding inside the search box */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07); /* Subtle shadow */
+}
+
+/* Main Question Input */
+.main-question-input {
+  width: 100%;
+  border: none; /* Remove default border */
+  outline: none; /* Remove outline on focus */
+  padding: 0.5rem 0; /* Padding for the input field, adjust as needed */
+  font-size: 1rem;
+  background-color: transparent; /* Inherit from .search-box */
+  margin-bottom: 0.75rem; /* Space between input and bottom controls */
+}
+.main-question-input::placeholder {
+  color: #888;
+}
+
+/* Container for bottom controls (model selector and send button) */
+.search-box-bottom-controls {
+  display: flex;
+  justify-content: space-between; /* Pushes model selector left, send button right */
+  align-items: center;
+}
+
+/* Model Selector Button (inside bottom controls) */
+.model-selector {
+  position: relative; /* For dropdown positioning */
+}
+.model-selector-button {
+  background-color: #e9ecef; /* Light background for the button */
+  border: 1px solid #ced4da; /* Subtle border for the button */
+  color: #333;
+  padding: 0.375rem 0.75rem; /* Padding for the button */
+  border-radius: 20px; /* Rounded button */
+  cursor: pointer;
+  font-size: 0.85rem; /* Slightly smaller font */
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: background-color 0.2s;
+}
+.model-selector-button:hover {
+  background-color: #d3d9df;
+}
+
+/* Dropdown list for model selector */
+.model-dropdown-list {
+  position: absolute;
+  bottom: calc(100% + 8px); /* Position above the button with some space */
+  left: 0;
+  background-color: white;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  list-style: none;
+  padding: 0.5rem 0;
+  margin: 0;
+  min-width: 160px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1100;
+}
+.model-dropdown-list li {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #333;
+}
+.model-dropdown-list li:hover {
+  background-color: #f0f0f0;
+}
+
+/* Ask Button (Send Button - inside bottom controls) */
+.ask-button {
+  background-color: transparent;
+  color: #555;
+  border: none;
+  border-radius: 8px; /* Slightly rounded, can be 50% for circle if background is added */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem; /* Padding around text and icon */
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  gap: 0.3rem; /* Space between "Awaken" and icon */
+  transition: color 0.2s, background-color 0.2s;
+}
+.ask-button:hover {
+  color: #007bff;
+  background-color: #e9ecef; /* Light background on hover */
+}
+.ask-button:disabled {
+  color: #aaa;
+  background-color: transparent;
+  cursor: not-allowed;
+}
+.ask-button svg { /* Target the SVG icon directly if needed */
+  vertical-align: middle;
+}
+
+
+/* Sidebar Styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 320px;
+  height: 100vh;
+  background-color: #ffffff;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+  transition: right 0.3s ease-in-out;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.show {
+  right: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  flex-shrink: 0;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #343a40;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  border-radius: 50%;
+}
+.close-button:hover {
+  background-color: #e9ecef;
+  color: #000;
+}
+
+.sidebar-content {
+  padding: 1rem;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+/* History Sidebar Specifics */
+.history-group {
+  margin-bottom: 1.5rem;
+}
+
+.history-group h4 {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e9ecef;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.history-list li {
+  padding: 0.6rem 0.25rem;
+  border-bottom: 1px solid #f1f3f5;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #495057;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.history-list li:last-child {
+  border-bottom: none;
+}
+
+.history-list li:hover {
+  background-color: #e9ecef;
+  color: #000;
+}
+
+/* User Menu Sidebar Specifics */
+.user-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-button {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 1rem;
+  color: #343a40;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.menu-button:hover {
+  background-color: #e9ecef;
+  color: #000;
+}
+
+.menu-button.btn-danger {
+  color: #dc3545;
+}
+.menu-button.btn-danger:hover {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+.menu-button .me-2 {
+  margin-right: 0.5rem;
+}
+
+/* Upload Modal Styles */
+.upload-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+  z-index: 2000;
+}
+
+.upload-modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.upload-modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+  position: relative; /* Ensure this is relative for absolute positioning of children */
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+
+/* New style for the close button inside FileUpload modal */
+.file-upload-close-button {
+  position: absolute;
+  top: 10px; /* Adjust as needed */
+  right: 10px; /* Adjust as needed */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+  color: #555;
+  border-radius: 50%;
+}
+
+.file-upload-close-button:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.file-upload-modal-inner h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.file-upload-modal-inner input[type="file"] {
+  display: block;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.file-upload-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.file-upload-actions button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.file-upload-actions button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.file-upload-actions .cancel-button {
+  background-color: #6c757d;
+  color: white;
+  border-color: #6c757d;
+}
+.file-upload-actions .cancel-button:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+
+.upload-modal-overlay.show .upload-modal-content {
+    transform: scale(1);
+}
+
+/* Upload Status Indicator */
+.upload-status-indicator {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  font-size: 0.95rem;
+  z-index: 2500;
+  opacity: 0;
+  transition: opacity 0.3s ease, bottom 0.3s ease;
+}
+
+.upload-status-indicator.show {
+    opacity: 1;
+    bottom: 30px;
+}
+
+.upload-status-indicator.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.upload-status-indicator.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* General Error Message */
+.error-message {
+  margin: 10px auto;
+  max-width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .App-header {
+    padding: 0.5rem 1rem;
+  }
+  .header-brand-name {
+    font-size: 1.2rem;
+  }
+  .header-title {
+    display: none;
+  }
+  .main-content {
+    padding: 0 0.5rem 0.5rem 0.5rem;
+  }
+  .results-view-container {
+    padding: 0.5rem;
+  }
+  .chat-message {
+    max-width: 90%;
+  }
+  .search-area-container {
+    padding: 0.75rem; /* Adjusted padding for smaller screens */
+  }
+  .search-box {
+    padding: 0.5rem 0.75rem; /* Adjusted padding for smaller screens */
+  }
+  .main-question-input {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  .model-selector-button, .ask-button {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+  }
+  .sidebar {
+    width: 280px;
+    right: -280px;
+  }
+}
