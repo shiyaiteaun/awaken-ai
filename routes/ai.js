@@ -119,10 +119,7 @@ router.post('/upload', (req, res) => {
 // Helper function to call different AI models
 async function callSelectedAIModel(question, context, modelName, apiKey) {
   console.log(`Calling actual AI: ${modelName} with question: "${question}"`);
-  // This basePromptContent is now less relevant as each model will have a more specific prompt structure.
-  // const basePromptContent = `Context from uploaded documents:\n"${context}"\n\nBased on the above context (and your general knowledge if the context is insufficient or irrelevant), please answer the following question: "${question}"`;
   
-
   try {
     switch (modelName.toLowerCase()) {
       case 'gemini':
@@ -130,21 +127,27 @@ async function callSelectedAIModel(question, context, modelName, apiKey) {
         const genAI = new GoogleGenerativeAI(apiKey);
         const geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" }); 
         
-        const geminiStrictContextPrompt = `You are an AI assistant. Your primary instruction is to answer the user's question based *ONLY* on the provided "Context from uploaded documents". 
-Do not use any external knowledge or information you were trained on, unless it is directly present in the context.
-If the answer to the question cannot be found within the provided "Context from uploaded documents", you MUST explicitly state that the information is not available in the uploaded documents. Do not attempt to answer from general knowledge.
+        const geminiStrictContextPrompt = `You are an AI assistant. Follow these crucial instructions precisely:
+
+Crucial Instructions for Answering:
+1.  **Source of Truth**: Your answer MUST be based *exclusively* on the information found within the "Context from uploaded documents" provided below. Do NOT use any external knowledge or information you were trained on.
+2.  **Language of Response**: You MUST respond in the *same language as the user's question*. For example, if the question is in Burmese, your entire response must be in Burmese. If the question is in English, your entire response must be in English.
+3.  **Handling Document Language Differences**:
+    *   The "Context from uploaded documents" might be in a different language than the user's question.
+    *   If the languages differ, you MUST first thoroughly understand the content of the documents.
+    *   Identify the specific information *within the documents* that directly answers the user's question.
+    *   Internally translate *only this specific relevant information* into the language of the user's question.
+    *   Use this internally translated information to construct your answer in the language of the user's question.
+4.  **Information Not Found**: If, after careful review of the "Context from uploaded documents", the answer to the question cannot be found, you MUST explicitly state this in the language of the user's question. For example, if the question is in Burmese, you might say: "တင်ပြထားသော စာရွက်စာတမ်းများတွင် အမေးနှင့်သက်ဆိုင်သည့် အချက်အလက် မပါဝင်ပါ။". Do not attempt to answer from general knowledge or make assumptions.
 
 Context from uploaded documents:
 """
 ${context}
 """
 
-Based *ONLY* on the "Context from uploaded documents" provided above, answer the following question: "${question}"
-
-(Important: Please respond in the same language as the user's question. If the question is in Burmese, respond in Burmese. If the question is in English, respond in English.)`;
+Based *ONLY* on the "Context from uploaded documents" provided above (and translated internally if necessary as per "Handling Document Language Differences" instruction), answer the following question: "${question}"`;
         
         console.log(`Attempting to generate content with Gemini model: gemini-1.5-flash-latest`);
-        // console.log(`Gemini Strict Context Prompt (first 300 chars): ${geminiStrictContextPrompt.substring(0,300)}...`); // Keep this commented or remove if too verbose
         const resultGemini = await geminiModel.generateContent(geminiStrictContextPrompt);
         const responseGemini = await resultGemini.response;
         console.log("Gemini response received.");
@@ -154,21 +157,28 @@ Based *ONLY* on the "Context from uploaded documents" provided above, answer the
         if (!apiKey) throw new Error("OpenAI API Key (OPENAI_API_KEY) is not set.");
         const openai = new OpenAI({ apiKey });
         
-        const gptStrictSystemMessage = `You are an AI assistant. Your primary instruction is to answer the user's question based *ONLY* on the provided "Context from uploaded documents" in the user message. 
-Do not use any external knowledge or information you were trained on.
-If the answer to the question cannot be found within the provided "Context from uploaded documents", you MUST explicitly state that the information is not available in the uploaded documents. Do not attempt to answer from general knowledge.
-Respond in the same language as the user's question.`;
+        const gptStrictSystemMessage = `You are an AI assistant. Adhere strictly to the following instructions:
+
+Crucial Instructions for Answering:
+1.  **Source of Truth**: Your answer MUST be based *exclusively* on the information found within the "Context from uploaded documents" provided in the user message. Do NOT use any external knowledge or information you were trained on.
+2.  **Language of Response**: You MUST respond in the *same language as the user's question*.
+3.  **Handling Document Language Differences**:
+    *   The "Context from uploaded documents" (in the user message) might be in a different language than the user's question.
+    *   If the languages differ, you must first thoroughly understand the content of the documents.
+    *   Identify the specific information *within the documents* that directly answers the user's question.
+    *   Internally translate *only this specific relevant information* into the language of the user's question.
+    *   Use this internally translated information to construct your answer in the language of the user's question.
+4.  **Information Not Found**: If, after careful review of the "Context from uploaded documents", the answer to the question cannot be found, you MUST explicitly state this in the language of the user's question (e.g., for a Burmese question: "တင်ပြထားသော စာရွက်စာတမ်းများတွင် အမေးနှင့်သက်ဆိုင်သည့် အချက်အလက် မပါဝင်ပါ။"). Do not attempt to answer from general knowledge.`;
 
         const gptUserStrictContextPrompt = `Context from uploaded documents:
 """
 ${context}
 """
 
-Based *ONLY* on the "Context from uploaded documents" provided above, answer the following question: "${question}"`;
+Based *ONLY* on the "Context from uploaded documents" provided above (and translated internally if necessary as per system instructions for handling document language differences), answer the following question: "${question}"`;
         
         const modelToUse = "gpt-4o"; 
         console.log(`Attempting to generate content with OpenAI model: ${modelToUse}`);
-        // console.log(`GPT-4 User Strict Context Prompt (first 300 chars): ${gptUserStrictContextPrompt.substring(0,300)}...`);
         
         const completionOpenAI = await openai.chat.completions.create({
           messages: [
@@ -189,20 +199,27 @@ Based *ONLY* on the "Context from uploaded documents" provided above, answer the
         if (!apiKey) throw new Error("DeepSeek API Key (DEEPSEEK_API_KEY) is not set.");
         const deepseekApiUrl = process.env.DEEPSEEK_API_URL || "https://api.deepseek.com/chat/completions";
         
-        const deepseekStrictSystemMessage = `You are an AI assistant. Your primary instruction is to answer the user's question based *ONLY* on the provided "Context from uploaded documents" in the user message. 
-Do not use any external knowledge or information you were trained on.
-If the answer to the question cannot be found within the provided "Context from uploaded documents", you MUST explicitly state that the information is not available in the uploaded documents. Do not attempt to answer from general knowledge.
-Respond in the same language as the user's question.`;
+        const deepseekStrictSystemMessage = `You are an AI assistant. Follow these instructions precisely:
+
+Crucial Instructions for Answering:
+1.  **Source of Truth**: Your answer MUST be based *exclusively* on the information found within the "Context from uploaded documents" provided in the user message. Do NOT use any external knowledge.
+2.  **Language of Response**: You MUST respond in the *same language as the user's question*.
+3.  **Handling Document Language Differences**:
+    *   The "Context from uploaded documents" (in the user message) might be in a different language than the user's question.
+    *   If languages differ, first thoroughly understand the document content.
+    *   Identify specific information *within the documents* that answers the question.
+    *   Internally translate *only this specific relevant information* to the question's language.
+    *   Use this translated information to construct your answer in the question's language.
+4.  **Information Not Found**: If the answer isn't in the "Context from uploaded documents", state this in the question's language (e.g., for Burmese: "တင်ပြထားသော စာရွက်စာတမ်းများတွင် အမေးနှင့်သက်ဆိုင်သည့် အချက်အလက် မပါဝင်ပါ။"). Do not use general knowledge.`;
 
         const deepseekUserStrictContextPrompt = `Context from uploaded documents:
 """
 ${context}
 """
 
-Based *ONLY* on the "Context from uploaded documents" provided above, answer the following question: "${question}"`;
+Based *ONLY* on the "Context from uploaded documents" provided above (and translated internally if necessary as per system instructions for handling document language differences), answer the following question: "${question}"`;
 
         console.log(`Attempting to generate content with DeepSeek model: deepseek-chat via URL: ${deepseekApiUrl}`);
-        // console.log(`DeepSeek User Strict Context Prompt (first 300 chars): ${deepseekUserStrictContextPrompt.substring(0,300)}...`);
         
         const deepseekPayload = {
           model: "deepseek-chat", 
@@ -254,10 +271,8 @@ Based *ONLY* on the "Context from uploaded documents" provided above, answer the
         throw new Error(`Unsupported AI model: ${modelName}`);
     }
   } catch (error) {
-    console.error(`Error calling AI model ${modelName}:`, error);
-    // Return a more user-friendly error message or the original error
-    // Include error.name for SDK specific errors
-    return `Error communicating with ${modelName}: [${error.name || 'Error'}] ${error.message}. Please check server logs and API key configurations.`;
+    console.error(`Error calling AI model ${modelName}:`, error); // ဒီနေရာမှာလည်း error object ကို ပြပါလိမ့်မယ်
+    res.status(500).json({ message: 'Failed to get response from AI.', error: error.message });
   }
 }
 
@@ -330,7 +345,7 @@ router.post('/ask', async (req, res) => {
     // API Key မရှိရင် warning ပြပြီး simulation အတိုင်းဆက်မသွားတော့ဘဲ error ပြန်ပါမယ်။
     // Claude ကလဲရင်ပေါ့ (Claude ကို simulation အဖြစ်ထားခဲ့လို့)
     if (!apiKey && effectiveModelName !== 'claude') {
-        console.error(`API Key for ${effectiveModelName} is not set in .env file.`);
+        console.error(`API Key for ${effectiveModelName} is not set in .env file.`); // API Key မရှိရင် ဒီ log ထွက်ပါမယ်
         return res.status(500).json({ message: `API Key for ${effectiveModelName} is not configured on the server.` });
     }
     
@@ -339,7 +354,7 @@ router.post('/ask', async (req, res) => {
     res.status(200).json({ answer: aiAnswer, modelUsed: effectiveModelName, contextFound: contextDocuments.length > 0 });
 
   } catch (error) {
-    console.error('Error processing AI request:', error);
+    console.error('Error processing AI request:', error); // ဒီနေရာမှာလည်း error object ကို ပြပါလိမ့်မယ်
     res.status(500).json({ message: 'Failed to get response from AI.', error: error.message });
   }
 });
